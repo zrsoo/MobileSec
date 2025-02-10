@@ -45,4 +45,35 @@ class ApiService {
       return {"success": false, "error": "Failed to connect to the server"};
     }
   }
+
+  // Register function
+  static Future<Map<String, dynamic>> register(String username, String email, String password) async {
+    final Uri url = Uri.parse("$_baseUrl/auth/register");
+
+    try {
+      final response = await _getHttpClient()
+          .post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"username": username, "email": email, "password": password}),
+      )
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException("Connection timed out. Please try again.");
+      });
+
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return {"success": true};
+      } else {
+        return {"success": false, "error": responseData["error"] ?? "Registration failed"};
+      }
+    } catch (e) {
+      if (e is TimeoutException) {
+        return {"success": false, "error": "Request timed out. Please check your internet connection."};
+      }
+      return {"success": false, "error": "Failed to connect to the server."};
+    }
+  }
+
 }

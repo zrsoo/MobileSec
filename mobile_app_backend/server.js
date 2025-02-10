@@ -3,8 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,7 +35,13 @@ app.get("/", (req, res) => {
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Read SSL Certificate
+const sslOptions = {
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
+  };
+
+// Start HTTPS Server
+https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log(`🚀 Secure server running on https://localhost:${PORT}`);
+  });

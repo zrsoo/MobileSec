@@ -1,0 +1,97 @@
+# ---- FLUTTER ----
+
+# Dart & Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+pubspec.lock
+
+# iOS
+ios/Flutter/.last_build_id
+ios/.symlinks
+ios/Pods/
+ios/.generated/
+*.xcworkspace/
+*.xcuserstate
+
+# Android
+android/.gradle/
+android/app/debug.keystore
+android/key.properties
+android/local.properties
+android/.cxx/
+
+# Web
+web/.dart_tool/
+web/.flutter-plugins
+web/.flutter-plugins-dependencies
+web/.packages
+
+# VSCode
+.vscode/
+.idea/
+*.iml
+
+# JetBrains IDEs
+*.ipr
+*.iws
+*.idea/
+*.iml
+
+# Misc
+*.log
+*.DS_Store
+*.lock
+*.gz
+*.swp
+*.swo
+*.swn
+
+# ---- NODE.JS + EXPRESS ----
+
+# Environment
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+
+# Logs
+logs
+*.log
+logs/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build
+dist/
+build/
+.cache/
+.tmp/
+
+# Binaries
+*.exe
+*.out
+*.app
+*.dmg
+*.deb
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

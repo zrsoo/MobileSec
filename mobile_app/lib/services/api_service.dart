@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
+import 'package:mobile_app/services/storage_service.dart';
 
 class ApiService {
   static const String _baseUrl = "https://192.168.100.12:5000";
@@ -22,16 +24,24 @@ class ApiService {
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": username, "password": password}),
-      );
+      ).timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException("Connection timed out");
+      });
 
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
+        // Save token if request is successful
+        await StorageService.saveToken(responseData["token"]);
         return {"success": true, "token": responseData["token"]};
       } else {
         return {"success": false, "error": responseData["error"] ?? "Login failed"};
       }
-    } catch (e) {
+    }
+    catch (e) {
+      if (e is TimeoutException) {
+        return {"success": false, "error": "Request timed out. Please check your internet connection."};
+      }
       return {"success": false, "error": "Failed to connect to the server"};
     }
   }

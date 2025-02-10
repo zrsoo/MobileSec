@@ -34,10 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final response = await ApiService.login(username, password);
 
-    if (response["success"]) {
-      print("Login successful! Token: ${response["token"]}");
-      // TODO: Store token securely & navigate to the home screen
-    } else {
+    if(!response["success"]) {
       setState(() {
         _errorMessage = response["error"];
       });

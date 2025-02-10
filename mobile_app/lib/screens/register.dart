@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/validation_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -26,10 +27,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+    // Validate username
+    if (ValidationService.validateUsername(username) != null) {
       setState(() {
+        _errorMessage = "Username is incorrect!";
         _isLoading = false;
-        _errorMessage = "All fields are required!";
+      });
+      return;
+    }
+
+    // Validate email
+    if (ValidationService.validateEmail(email) != null) {
+      setState(() {
+        _errorMessage = "Email is incorrect!";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // Validate password
+    if (ValidationService.validatePassword(password) != null) {
+      setState(() {
+        _errorMessage = "Password is incorrect!";
+        _isLoading = false;
       });
       return;
     }
@@ -72,7 +92,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _errorMessage == "username" ? ValidationService.validateUsername(_usernameController.text) : null,
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _errorMessage = ValidationService.validateUsername(value) != null ? "username" : null;
+                  });
+                },
               ),
               const SizedBox(height: 15),
               TextField(
@@ -83,7 +109,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _errorMessage == "email" ? ValidationService.validateEmail(_emailController.text) : null,
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _errorMessage = ValidationService.validateEmail(value) != null ? "email" : null;
+                  });
+                },
               ),
               const SizedBox(height: 15),
               TextField(
@@ -105,7 +137,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  errorText: _errorMessage == "password" ? ValidationService.validatePassword(_passwordController.text) : null,
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _errorMessage = ValidationService.validatePassword(value) != null ? "password" : null;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               _isLoading

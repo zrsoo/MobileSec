@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/screens/config.dart';
 import '../services/api_service.dart';
 import '../widgets/car_card.dart';
 import '../models/car.dart';
@@ -107,6 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Car List"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ConfigScreen())
+                );
+              },
+              icon: const Icon(Icons.settings))
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

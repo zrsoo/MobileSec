@@ -1,9 +1,10 @@
 const express = require("express");
 const pool = require("../services/db");
 const router = express.Router();
+const authenticateToken = require("../middleware/authenticate_requests");
 
 // Get all cars
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM cars ORDER BY year ASC");
     res.json(result.rows);
@@ -14,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 // Delete car by id
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
     const carId = req.params.id;
   
     try {
@@ -32,7 +33,7 @@ router.delete("/:id", async (req, res) => {
   });
 
 // Update car by id
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateToken, async (req, res) => {
     const carId = req.params.id;
     const { brand, model, year, condition } = req.body;
   
@@ -80,7 +81,7 @@ router.put("/:id", async (req, res) => {
   });
 
   // Add car
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
     const { brand, model, year } = req.body;
   
     // Validate input

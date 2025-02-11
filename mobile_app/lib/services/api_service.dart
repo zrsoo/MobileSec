@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:mobile_app/services/storage_service.dart';
 
+import '../models/car.dart';
+
 class ApiService {
   static const String _baseUrl = "https://192.168.100.12:5000";
 
@@ -76,4 +78,26 @@ class ApiService {
     }
   }
 
+  // Fetch all cars from the backend
+  static Future<List<Car>> getCars() async {
+    final Uri url = Uri.parse("$_baseUrl/cars");
+
+    try {
+      final response = await _getHttpClient().get(url).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException("Request timed out.");
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> carsList = jsonDecode(response.body);
+        return carsList.map((json) => Car.fromJson(json)).toList();
+      } else {
+        throw Exception("Failed to fetch cars. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch cars: $e");
+    }
+  }
 }

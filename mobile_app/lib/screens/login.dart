@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/screens/home.dart';
 import 'package:mobile_app/screens/register.dart';
 import '../services/api_service.dart';
 
@@ -35,7 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final response = await ApiService.login(username, password);
 
-    if(!response["success"]) {
+    if(response["success"]) {
+      // If login is successful, re-direct to home screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen())
+      );
+    }
+    else {
       setState(() {
         _errorMessage = response["error"];
       });

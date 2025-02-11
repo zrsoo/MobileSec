@@ -17,6 +17,15 @@ class ApiService {
     return IOClient(client);
   }
 
+  // Helper function to get headers with the JWT token
+  static Future<Map<String, String>> _getHeaders() async {
+    String? token = await StorageService.getToken();
+    return {
+      "Content-Type": "application/json",
+      if (token != null) "Authorization": "Bearer $token",
+    };
+  }
+
   // Login
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final Uri url = Uri.parse("$_baseUrl/auth/login");
@@ -83,7 +92,10 @@ class ApiService {
     final Uri url = Uri.parse("$_baseUrl/cars");
 
     try {
-      final response = await _getHttpClient().get(url).timeout(
+      final response = await _getHttpClient().get(
+        url,
+        headers: await _getHeaders()
+      ).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
           throw TimeoutException("Request timed out.");
@@ -106,7 +118,10 @@ class ApiService {
     final Uri url = Uri.parse("$_baseUrl/cars/$carId");
 
     try {
-      final response = await _getHttpClient().delete(url).timeout(
+      final response = await _getHttpClient().delete(
+        url,
+        headers: await _getHeaders()
+      ).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
           throw TimeoutException("Request timed out.");
@@ -137,7 +152,7 @@ class ApiService {
     try {
       final response = await _getHttpClient().put(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: await _getHeaders(),
         body: jsonEncode(updatedFields),
       ).timeout(
         const Duration(seconds: 10),
@@ -169,7 +184,7 @@ class ApiService {
     try {
       final response = await _getHttpClient().post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: await _getHeaders(),
         body: jsonEncode(carData),
       ).timeout(
         const Duration(seconds: 10),

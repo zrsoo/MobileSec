@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../widgets/car_card.dart';
 import '../models/car.dart';
+import 'add_car.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -101,12 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Placeholder for adding a car
-  void _onAddCarPressed() {
-    print("🚗 Add Car button pressed!");
-    // TODO: Navigate to Add Car screen in the future
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,9 +126,12 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Align(
         alignment: Alignment.bottomLeft,
         child: Transform.translate(
-          offset: const Offset(60, 0),
+          offset: const Offset(25, 0),
           child: FloatingActionButton(
-            onPressed: _onAddCarPressed,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddCarScreen()),
+            ),
             backgroundColor: Colors.green,
             child: const Icon(Icons.add, color: Colors.white, size: 32),
           ),

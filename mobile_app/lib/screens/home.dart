@@ -68,10 +68,39 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Placeholder use function
-  void _useCar(int carId) {
-    print("Use car with ID: $carId");
+  Future<void> _useCar(int carId) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    int newCondition = _cars.firstWhere((car) => car.id == carId).condition - 10;
+    
+    try {
+      bool success = await ApiService.updateCar(carId, condition: newCondition); // Set condition to 100
+      if (success) {
+        setState(() {
+          _cars = _cars.map((car) {
+            if (car.id == carId) {
+              return Car(id: car.id, brand: car.brand, model: car.model, year: car.year, condition: newCondition);
+            }
+            return car;
+          }).toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = "Failed to update car.";
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = "Error: ${e.toString()}";
+        _isLoading = false;
+      });
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

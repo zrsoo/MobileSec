@@ -122,4 +122,37 @@ class ApiService {
       throw Exception("Failed to delete car: $e");
     }
   }
+
+  // Update car
+  static Future<bool> updateCar(int carId, {String? brand, String? model, int? year, int? condition}) async {
+    final Uri url = Uri.parse("$_baseUrl/cars/$carId");
+
+    // Create the body with only the fields that are updated
+    Map<String, dynamic> updatedFields = {};
+    if (brand != null) updatedFields["brand"] = brand;
+    if (model != null) updatedFields["model"] = model;
+    if (year != null) updatedFields["year"] = year;
+    if (condition != null) updatedFields["condition"] = condition;
+
+    try {
+      final response = await _getHttpClient().put(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(updatedFields),
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException("Request timed out.");
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true; // Update successful
+      } else {
+        throw Exception("Failed to update car. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Failed to update car: $e");
+    }
+  }
 }

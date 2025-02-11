@@ -79,4 +79,31 @@ router.put("/:id", async (req, res) => {
     }
   });
 
+  // Add car
+router.post("/", async (req, res) => {
+    const { brand, model, year } = req.body;
+  
+    // Validate input
+    if (!brand || !model || !year) {
+      return res.status(400).json({ error: "All fields (brand, model, year) are required!" });
+    }
+  
+    if (isNaN(year)) {
+      return res.status(400).json({ error: "Invalid year!" });
+    }
+  
+    try {
+      // Insert into database (default condition = 100)
+      const result = await pool.query(
+        "INSERT INTO cars (brand, model, year, condition) VALUES ($1, $2, $3, $4) RETURNING *",
+        [brand, model, year, 100]
+      );
+  
+      res.status(201).json({ message: "Car added successfully!", car: result.rows[0] });
+    } catch (error) {
+      console.error("Error adding car:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
 module.exports = router;

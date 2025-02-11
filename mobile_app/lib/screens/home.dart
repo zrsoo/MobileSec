@@ -6,7 +6,9 @@ import '../models/car.dart';
 import 'add_car.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(Color) onThemeChanged;
+
+  const HomeScreen({super.key, required this.onThemeChanged});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -23,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _fetchCars();
   }
 
-  // Fetch cars from API
   Future<void> _fetchCars() async {
     setState(() {
       _isLoading = true;
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bool success = await ApiService.deleteCar(carId);
       if (success) {
         setState(() {
-          _cars.removeWhere((car) => car.id == carId); // Remove from UI
+          _cars.removeWhere((car) => car.id == carId);
           _isLoading = false;
         });
       } else {
@@ -76,9 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     int newCondition = _cars.firstWhere((car) => car.id == carId).condition - 10;
-    
+
     try {
-      bool success = await ApiService.updateCar(carId, condition: newCondition); // Set condition to 100
+      bool success = await ApiService.updateCar(carId, condition: newCondition);
       if (success) {
         setState(() {
           _cars = _cars.map((car) {
@@ -110,13 +111,16 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Car List"),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ConfigScreen())
-                );
-              },
-              icon: const Icon(Icons.settings))
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConfigScreen(onThemeChanged: widget.onThemeChanged),
+                ),
+              );
+            },
+            icon: const Icon(Icons.settings),
+          )
         ],
       ),
       body: _isLoading
@@ -130,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return CarCard(
             car: car,
             onDelete: () => _deleteCar(car.id),
-            onUse: () => _useCar(car.id)
+            onUse: () => _useCar(car.id),
           );
         },
       ),
@@ -145,8 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context) => const AddCarScreen()),
               );
 
-              // If car was added successfully, refresh car list
-              if(carAdded == true) {
+              if (carAdded == true) {
                 _fetchCars();
               }
             },

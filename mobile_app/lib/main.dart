@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/screens/login.dart';
+import 'package:mobile_app/services/config_database.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load saved color from SQLite
+  int? savedColor = await ConfigDatabase.getBackgroundColor();
+
+  runApp(MyApp(initialColor: savedColor != null ? Color(savedColor) : Colors.white));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final Color initialColor;
+
+  const MyApp({super.key, required this.initialColor});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Color _backgroundColor = Colors.white;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundColor = widget.initialColor; // Set initial theme color
+  }
+
+  void _updateTheme(Color newColor) async {
+    setState(() {
+      _backgroundColor = newColor; // Update global theme
+    });
+
+    await ConfigDatabase.saveBackgroundColor(newColor.value); // Save to SQLite
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Secure App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: _backgroundColor, // Apply background color globally
       ),
-      home: const LoginScreen(), // Set Login Screen as first screen
+      home: LoginScreen(onThemeChanged: _updateTheme),
     );
   }
 }

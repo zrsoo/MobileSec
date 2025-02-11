@@ -4,7 +4,9 @@ import 'package:mobile_app/screens/register.dart';
 import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final Function(Color) onThemeChanged;
+
+  const LoginScreen({super.key, required this.onThemeChanged});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -40,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // If login is successful, re-direct to home screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen())
+        MaterialPageRoute(builder: (context) => HomeScreen(onThemeChanged: widget.onThemeChanged,))
       );
     }
     else {

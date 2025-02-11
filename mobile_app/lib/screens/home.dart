@@ -101,6 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Placeholder for adding a car
+  void _onAddCarPressed() {
+    print("🚗 Add Car button pressed!");
+    // TODO: Navigate to Add Car screen in the future
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +124,20 @@ class _HomeScreenState extends State<HomeScreen> {
           return CarCard(
             car: car,
             onDelete: () => _deleteCar(car.id),
-            onUse: () => _useCar(car.id),
+            onUse: () => _useCar(car.id)
           );
         },
+      ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomLeft,
+        child: Transform.translate(
+          offset: const Offset(60, 0),
+          child: FloatingActionButton(
+            onPressed: _onAddCarPressed,
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.add, color: Colors.white, size: 32),
+          ),
+        ),
       ),
     );
   }

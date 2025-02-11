@@ -42,9 +42,30 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Placeholder delete function
-  void _deleteCar(int carId) {
-    print("Delete car with ID: $carId");
+  Future<void> _deleteCar(int carId) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      bool success = await ApiService.deleteCar(carId);
+      if (success) {
+        setState(() {
+          _cars.removeWhere((car) => car.id == carId); // Remove from UI
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = "Failed to delete car.";
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = "Error: ${e.toString()}";
+        _isLoading = false;
+      });
+    }
   }
 
   // Placeholder use function

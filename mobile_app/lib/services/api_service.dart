@@ -17,7 +17,7 @@ class ApiService {
     return IOClient(client);
   }
 
-  // Login function
+  // Login
   static Future<Map<String, dynamic>> login(String username, String password) async {
     final Uri url = Uri.parse("$_baseUrl/auth/login");
 
@@ -48,7 +48,7 @@ class ApiService {
     }
   }
 
-  // Register function
+  // Register
   static Future<Map<String, dynamic>> register(String username, String email, String password) async {
     final Uri url = Uri.parse("$_baseUrl/auth/register");
 
@@ -78,7 +78,7 @@ class ApiService {
     }
   }
 
-  // Fetch all cars from the backend
+  // Fetch cars
   static Future<List<Car>> getCars() async {
     final Uri url = Uri.parse("$_baseUrl/cars");
 
@@ -98,6 +98,28 @@ class ApiService {
       }
     } catch (e) {
       throw Exception("Failed to fetch cars: $e");
+    }
+  }
+
+  // Delete car by id
+  static Future<bool> deleteCar(int carId) async {
+    final Uri url = Uri.parse("$_baseUrl/cars/$carId");
+
+    try {
+      final response = await _getHttpClient().delete(url).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException("Request timed out.");
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true; // Car deleted successfully
+      } else {
+        throw Exception("Failed to delete car. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Failed to delete car: $e");
     }
   }
 }

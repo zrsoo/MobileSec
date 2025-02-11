@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/api_service.dart';
+
 class AddCarScreen extends StatefulWidget {
   const AddCarScreen({super.key});
 
@@ -11,24 +13,49 @@ class _AddCarScreenState extends State<AddCarScreen> {
   final TextEditingController _makeController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+  bool _isLoading = false;
 
-  void _addCar() {
-    String make = _makeController.text.trim();
+  Future<void> _addCar() async {
+    String brand = _makeController.text.trim();
     String model = _modelController.text.trim();
-    String year = _yearController.text.trim();
+    String yearText = _yearController.text.trim();
 
-    if (make.isEmpty || model.isEmpty || year.isEmpty) {
+    if (brand.isEmpty || model.isEmpty || yearText.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("All fields are required!")),
       );
       return;
     }
 
-    // TODO: Implement API call to add car
-    print("🚗 Adding car: Make=$make, Model=$model, Year=$year");
+    int? year = int.tryParse(yearText);
+    if (year == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Enter a valid year!")),
+      );
+      return;
+    }
 
-    // Close the screen after adding
-    Navigator.pop(context);
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      bool success = await ApiService.addCar(brand, model, year);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Car added successfully!")),
+        );
+        Navigator.pop(context, true); // Return success to refresh home screen
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -70,13 +97,15 @@ class _AddCarScreenState extends State<AddCarScreen> {
             const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
-                onPressed: _addCar,
+                onPressed: _isLoading ? null : _addCar,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text("Add Car"),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Add Car"),
               ),
             ),
           ],

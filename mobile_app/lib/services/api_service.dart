@@ -155,4 +155,36 @@ class ApiService {
       throw Exception("Failed to update car: $e");
     }
   }
+
+  // Add car
+  static Future<bool> addCar(String brand, String model, int year) async {
+    final Uri url = Uri.parse("$_baseUrl/cars");
+
+    final Map<String, dynamic> carData = {
+      "brand": brand,
+      "model": model,
+      "year": year,
+    };
+
+    try {
+      final response = await _getHttpClient().post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(carData),
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw TimeoutException("Request timed out.");
+        },
+      );
+
+      if (response.statusCode == 201) {
+        return true; // Car added successfully
+      } else {
+        throw Exception("Failed to add car. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Failed to add car: $e");
+    }
+  }
 }

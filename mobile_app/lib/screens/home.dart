@@ -128,10 +128,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Transform.translate(
           offset: const Offset(25, 0),
           child: FloatingActionButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddCarScreen()),
-            ),
+            onPressed: () async {
+              bool? carAdded = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddCarScreen()),
+              );
+
+              // If car was added successfully, refresh car list
+              if(carAdded == true) {
+                _fetchCars();
+              }
+            },
             backgroundColor: Colors.green,
             child: const Icon(Icons.add, color: Colors.white, size: 32),
           ),
